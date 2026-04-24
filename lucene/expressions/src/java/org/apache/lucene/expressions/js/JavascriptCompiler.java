@@ -73,9 +73,9 @@ import org.apache.lucene.util.SuppressForbidden;
  *
  * <p>Example:
  *
- * <pre class="prettyprint">
+ * <pre><code class="language-java">
  *   Expression foo = JavascriptCompiler.compile("((0.3*popularity)/10.0)+(0.7*score)");
- * </pre>
+ * </code></pre>
  *
  * <p>See the {@link org.apache.lucene.expressions.js package documentation} for the supported
  * syntax and default functions.
@@ -83,7 +83,7 @@ import org.apache.lucene.util.SuppressForbidden;
  * <p>You can compile with an alternate set of functions via {@link #compile(String, Map)}. For
  * example:
  *
- * <pre class="prettyprint">
+ * <pre><code class="language-java">
  *   Map&lt;String,MethodHandle&gt; functions = new HashMap&lt;&gt;();
  *   // add all the default functions
  *   functions.putAll(JavascriptCompiler.DEFAULT_FUNCTIONS);
@@ -93,7 +93,7 @@ import org.apache.lucene.util.SuppressForbidden;
  *   // call compile with customized function map
  *   Expression foo = JavascriptCompiler.compile("cbrt(score)+ln(popularity)",
  *                                               functions);
- * </pre>
+ * </code></pre>
  *
  * <p>It is possible to pass any {@link MethodHandle} as function that only takes {@code double}
  * parameters and returns a {@code double}. The method does not need to be public, it just needs to
@@ -851,7 +851,7 @@ public final class JavascriptCompiler {
                   + "#"
                   + cracked.getName()
                   + cracked.getMethodType();
-    } catch (@SuppressWarnings("unused") IllegalArgumentException | SecurityException iae) {
+    } catch (IllegalArgumentException | SecurityException _) {
       // can't check for static, we assume it is static
       // (it does not matter as we call the MethodHandle directly if it is compatible):
       refKind = MethodHandleInfo.REF_invokeStatic;

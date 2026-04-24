@@ -69,6 +69,7 @@ import org.apache.lucene.index.TermState;
 import org.apache.lucene.index.TermVectors;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.search.AcceptDocs;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.CollectorManager;
 import org.apache.lucene.search.DocIdSetIterator;
@@ -109,9 +110,9 @@ import org.apache.lucene.util.Version;
  * search), this class targets fulltext search of huge numbers of queries over comparatively small
  * transient realtime data (prospective search). For example as in
  *
- * <pre class="prettyprint">
+ * <pre><code class="language-java">
  * float score = search(String text, Query query)
- * </pre>
+ * </code></pre>
  *
  * <p>Each instance can hold at most one Lucene "document", with a document containing zero or more
  * "fields", each field having a name and a fulltext value. The fulltext value is tokenized (split
@@ -140,7 +141,7 @@ import org.apache.lucene.util.Version;
  *
  * <p><b>Example Usage</b> <br>
  *
- * <pre class="prettyprint">
+ * <pre><code class="language-java">
  * Analyzer analyzer = new SimpleAnalyzer(version);
  * MemoryIndex index = new MemoryIndex();
  * index.addField("content", "Readings about Salmons and other select Alaska fishing Manuals", analyzer);
@@ -153,11 +154,11 @@ import org.apache.lucene.util.Version;
  *     System.out.println("no match found");
  * }
  * System.out.println("indexData=" + index.toString());
- * </pre>
+ * </code></pre>
  *
  * <p><b>Example XQuery Usage</b>
  *
- * <pre class="prettyprint">
+ * <pre><code class="language-java">
  * (: An XQuery that finds all books authored by James that have something to do with "salmon fishing manuals", sorted by relevance :)
  * declare namespace lucene = "java:nux.xom.pool.FullTextUtil";
  * declare variable $query := "+salmon~ +fish* manual~"; (: any arbitrary Lucene query can go here :)
@@ -166,7 +167,7 @@ import org.apache.lucene.util.Version;
  * let $score := lucene:match($book/abstract, $query)
  * order by $score descending
  * return $book
- * </pre>
+ * </code></pre>
  *
  * <p><b>Thread safety guarantees</b>
  *
@@ -1757,11 +1758,11 @@ public class MemoryIndex {
 
     @Override
     public void searchNearestVectors(
-        String field, float[] target, KnnCollector knnCollector, Bits acceptDocs) {}
+        String field, float[] target, KnnCollector knnCollector, AcceptDocs acceptDocs) {}
 
     @Override
     public void searchNearestVectors(
-        String field, byte[] target, KnnCollector knnCollector, Bits acceptDocs) {}
+        String field, byte[] target, KnnCollector knnCollector, AcceptDocs acceptDocs) {}
 
     @Override
     public void checkIntegrity() throws IOException {

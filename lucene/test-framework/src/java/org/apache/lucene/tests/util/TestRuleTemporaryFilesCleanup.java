@@ -117,7 +117,7 @@ final class TestRuleTemporaryFilesCleanup extends TestRuleAdapter {
       avoid.addAll(Arrays.asList(a.value()));
     }
     FileSystem fs = FileSystems.getDefault();
-    if (LuceneTestCase.VERBOSE && allowed(avoid, VerboseFS.class)) {
+    if (LuceneTestCase.INFOSTREAM && allowed(avoid, VerboseFS.class)) {
       fs =
           new VerboseFS(
                   fs,
@@ -251,9 +251,7 @@ final class TestRuleTemporaryFilesCleanup extends TestRuleAdapter {
         try {
           Files.createDirectory(f);
           success = true;
-        } catch (
-            @SuppressWarnings("unused")
-            IOException ignore) {
+        } catch (IOException _) {
         }
       } while (!success);
 
@@ -282,9 +280,7 @@ final class TestRuleTemporaryFilesCleanup extends TestRuleAdapter {
       try {
         Files.createDirectory(f);
         success = true;
-      } catch (
-          @SuppressWarnings("unused")
-          IOException ignore) {
+      } catch (IOException _) {
       }
     } while (!success);
 
@@ -311,9 +307,7 @@ final class TestRuleTemporaryFilesCleanup extends TestRuleAdapter {
       try {
         Files.createFile(f);
         success = true;
-      } catch (
-          @SuppressWarnings("unused")
-          IOException ignore) {
+      } catch (IOException _) {
       }
     } while (!success);
 

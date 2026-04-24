@@ -168,8 +168,8 @@ public class Highlighter {
     OffsetAttribute offsetAtt = tokenStream.addAttribute(OffsetAttribute.class);
     TextFragment currentFrag = new TextFragment(newText, newText.length(), docFrags.size());
 
-    if (fragmentScorer instanceof QueryScorer) {
-      ((QueryScorer) fragmentScorer).setMaxDocCharsToAnalyze(maxDocCharsToAnalyze);
+    if (fragmentScorer instanceof QueryScorer qs) {
+      qs.setMaxDocCharsToAnalyze(maxDocCharsToAnalyze);
     }
 
     TokenStream newStream = fragmentScorer.init(tokenStream);
@@ -313,9 +313,7 @@ public class Highlighter {
         try {
           tokenStream.end();
           tokenStream.close();
-        } catch (
-            @SuppressWarnings("unused")
-            Exception e) {
+        } catch (Exception _) {
         }
       }
     }

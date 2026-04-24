@@ -36,12 +36,14 @@ on their own.
 ## How to split the data into files?
 
 Most file formats split the data into 3 files:
+
 - metadata,
 - index data,
 - raw data.
 
 The metadata file contains all the data that is read once at open time. This
 helps on several fronts:
+
 - One can validate the checksums of this data at open time without significant
 overhead since all data needs to be read anyway, this helps detect
 corruptions early.
@@ -78,7 +80,7 @@ field.
 ## Add codec headers and footers to all files
 
 Use `CodecUtil` to add headers and footers to all files of the index. This
-helps make sure that we are opening the right file and differenciate Lucene
+helps make sure that we are opening the right file and differentiate Lucene
 bugs from file corruptions.
 
 ## Validate checksums of the metadata file when opening a segment
@@ -124,4 +126,4 @@ by merges. All default implementations do this.
 
 ## How to make backward-compatible changes to file formats?
 
-See [here](../lucene/backward-codecs/README.md).
+See [Index Backwards Compatibility](../lucene/backward-codecs/README.md).

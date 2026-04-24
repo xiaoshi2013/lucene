@@ -19,13 +19,11 @@ package org.apache.lucene.search;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
-import org.apache.lucene.index.Impact;
+import org.apache.lucene.index.FreqAndNormBuffer;
 import org.apache.lucene.index.Impacts;
 import org.apache.lucene.index.ImpactsSource;
 import org.apache.lucene.index.Term;
@@ -81,6 +79,7 @@ public final class SloppyPhraseMatcher extends PhraseMatcher {
 
   private boolean positioned;
   private int matchLength;
+  private boolean freqsLoaded;
 
   public SloppyPhraseMatcher(
       PhraseQuery.PostingsAndFreq[] postings,
@@ -128,14 +127,20 @@ public final class SloppyPhraseMatcher extends PhraseMatcher {
           public Impacts getImpacts() throws IOException {
             return new Impacts() {
 
+              private final FreqAndNormBuffer impactBuffer = new FreqAndNormBuffer();
+
+              {
+                impactBuffer.add(Integer.MAX_VALUE, 1);
+              }
+
               @Override
               public int numLevels() {
                 return 1;
               }
 
               @Override
-              public List<Impact> getImpacts(int level) {
-                return Collections.singletonList(new Impact(Integer.MAX_VALUE, 1L));
+              public FreqAndNormBuffer getImpacts(int level) {
+                return impactBuffer;
               }
 
               @Override
@@ -163,18 +168,29 @@ public final class SloppyPhraseMatcher extends PhraseMatcher {
 
   @Override
   float maxFreq() throws IOException {
-    // every term position in each postings list can be at the head of at most
-    // one matching phrase, so the maximum possible phrase freq is the sum of
-    // the freqs of the postings lists.
+    // Load freqs eagerly so maxFreq() can be called before resetPositions() in TOP_SCORES
+    // mode. PhraseScorer uses this to short-circuit non-competitive documents
+    // before paying the cost of resetPositions() + initPhrasePositions().
     float maxFreq = 0;
     for (PhrasePositions phrasePosition : phrasePositions) {
-      maxFreq += phrasePosition.postings.freq();
+      phrasePosition.freq = phrasePosition.postings.freq();
+      maxFreq += phrasePosition.freq;
     }
+    freqsLoaded = true;
     return maxFreq;
   }
 
   @Override
-  public void reset() throws IOException {
+  public void resetPositions() throws IOException {
+    if (freqsLoaded) {
+      // Freqs already loaded by maxFreq().
+      freqsLoaded = false;
+    } else {
+      // Freqs not yet loaded. Load them now.
+      for (PhrasePositions phrasePosition : phrasePositions) {
+        phrasePosition.freq = phrasePosition.postings.freq();
+      }
+    }
     this.positioned = initPhrasePositions();
     this.matchLength = Integer.MAX_VALUE;
     this.leadPosition = Integer.MAX_VALUE;

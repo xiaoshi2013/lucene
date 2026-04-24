@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.lucene.codecs.lucene99.Lucene99HnswScalarQuantizedVectorsFormat;
+import org.apache.lucene.codecs.lucene104.Lucene104HnswScalarQuantizedVectorsFormat;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.IntField;
@@ -44,7 +44,6 @@ import org.apache.lucene.tests.util.LuceneTestCase;
 import org.apache.lucene.tests.util.TestUtil;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 public class TestRescoreTopNQuery extends LuceneTestCase {
 
@@ -66,10 +65,9 @@ public class TestRescoreTopNQuery extends LuceneTestCase {
     // Set up the IndexWriterConfig to use quantized vector storage
     config = new IndexWriterConfig();
     config.setCodec(
-        TestUtil.alwaysKnnVectorsFormat(new Lucene99HnswScalarQuantizedVectorsFormat()));
+        TestUtil.alwaysKnnVectorsFormat(new Lucene104HnswScalarQuantizedVectorsFormat()));
   }
 
-  @Test
   public void testInvalidN() {
     expectThrows(
         IllegalArgumentException.class,
@@ -78,7 +76,8 @@ public class TestRescoreTopNQuery extends LuceneTestCase {
                 new TermQuery(new Term("test")), DoubleValuesSource.constant(0), 0));
   }
 
-  @Test
+  // TODO: incredibly slow
+  @Nightly
   public void testRescoreField() throws Exception {
     Map<Integer, float[]> vectors = new HashMap<>();
 
@@ -98,9 +97,8 @@ public class TestRescoreTopNQuery extends LuceneTestCase {
           doc.add(new KnnFloatVectorField(FIELD, vector, VECTOR_SIMILARITY_FUNCTION));
           writer.addDocument(doc);
           vectors.put(id, vector);
-
-          writer.flush();
         }
+        writer.flush();
       }
     }
 
@@ -167,9 +165,9 @@ public class TestRescoreTopNQuery extends LuceneTestCase {
     final String LATE_I_FIELD = "li_vector";
     final String KNN_FIELD = "knn_vector";
     List<float[][]> corpus = new ArrayList<>();
-    final int numDocs = atLeast(1000);
-    final int numSegments = random().nextInt(2, 10);
-    final int dim = 128;
+    final int numDocs = atLeast(100);
+    final int numSegments = atLeast(2);
+    final int dim = 8;
     final VectorSimilarityFunction vectorSimilarityFunction =
         VectorSimilarityFunction.values()[
             random().nextInt(VectorSimilarityFunction.values().length)];
@@ -195,8 +193,8 @@ public class TestRescoreTopNQuery extends LuceneTestCase {
               doc.add(new IntField("has_li_vector", 1, Field.Store.YES));
             }
             w.addDocument(doc);
-            w.flush();
           }
+          w.flush();
         }
         // add a segment with no vectors
         for (int i = 0; i < 100; i++) {

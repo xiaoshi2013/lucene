@@ -40,7 +40,7 @@ from typing import Any
 
 import scriptutil
 
-BASE_JAVA_VERSION = "24"
+BASE_JAVA_VERSION = "25"
 
 # This tool expects to find /lucene off the base URL.  You
 # must have a working gpg, tar, unzip in your path.  This has been
@@ -431,7 +431,7 @@ def printFileContents(fileName: str):
   # even if we are wrong, we replace errors ... the ASCII chars
   # (which is what we mostly care about eg for the test seed) should
   # still survive:
-  txt = codecs.open(fileName, "r", encoding=sys.getdefaultencoding(), errors="replace").read()
+  txt = open(fileName, encoding=sys.getdefaultencoding(), errors="replace").read()
 
   # Encode to our output encoding (likely also system's default
   # encoding):
@@ -938,7 +938,7 @@ def verifyDeployedPOMsCoordinates(artifacts: list[str], version: str):
 
 
 def crawl(downloadedFiles: list[str], urlString: str, targetDir: str, exclusions: set[str] | None = None):
-  exclude: set[str] = exclusions if exclusions else set()
+  exclude: set[str] = exclusions or set()
   for text, subURL in getDirEntries(urlString):
     if text not in exclude:
       path = os.path.join(targetDir, text)

@@ -159,7 +159,7 @@ final class ConjunctionDISI extends FilterDocIdSetIterator {
 
     lead1 = iterators.get(0);
     lead2 = iterators.get(1);
-    others = iterators.subList(2, iterators.size()).toArray(new DocIdSetIterator[0]);
+    others = iterators.subList(2, iterators.size()).toArray(DocIdSetIterator[]::new);
   }
 
   private int doNext(int doc) throws IOException {
@@ -201,7 +201,7 @@ final class ConjunctionDISI extends FilterDocIdSetIterator {
   @Override
   public int advance(int target) throws IOException {
     assert assertItersOnSameDoc()
-        : "Sub-iterators of ConjunctionDISI are not one the same document!";
+        : "Sub-iterators of ConjunctionDISI are not on the same document!";
     return doNext(lead1.advance(target));
   }
 

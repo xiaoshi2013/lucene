@@ -345,8 +345,9 @@ final class Lucene90NormsProducer extends NormsProducer implements Cloneable {
       }
 
       @Override
-      public void prefetch(long offset, long length) throws IOException {
+      public boolean prefetch(long offset, long length) throws IOException {
         // Not delegating to the wrapped instance on purpose. This is only used for merging.
+        return false;
       }
     };
   }
@@ -393,6 +394,14 @@ final class Lucene90NormsProducer extends NormsProducer implements Cloneable {
             @Override
             public long longValue() throws IOException {
               return slice.readByte(doc);
+            }
+
+            @Override
+            public void longValues(int size, int[] docs, long[] values, long defaultValue)
+                throws IOException {
+              // Delegate to help performance: when the super call inlines, calls to
+              // #advanceExact/#longValue become monomorphic.
+              super.longValues(size, docs, values, defaultValue);
             }
           };
         case 2:
@@ -447,6 +456,14 @@ final class Lucene90NormsProducer extends NormsProducer implements Cloneable {
             @Override
             public long longValue() throws IOException {
               return slice.readByte(disi.index());
+            }
+
+            @Override
+            public void longValues(int size, int[] docs, long[] values, long defaultValue)
+                throws IOException {
+              // Delegate to help performance: when the super call inlines, calls to
+              // #advanceExact/#longValue become monomorphic.
+              super.longValues(size, docs, values, defaultValue);
             }
           };
         case 2:

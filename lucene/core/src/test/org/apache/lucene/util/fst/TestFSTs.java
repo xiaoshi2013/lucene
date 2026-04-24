@@ -386,9 +386,7 @@ public class TestFSTs extends LuceneTestCase {
         if (ord == 0) {
           try {
             termsEnum.ord();
-          } catch (
-              @SuppressWarnings("unused")
-              UnsupportedOperationException uoe) {
+          } catch (UnsupportedOperationException _) {
             if (VERBOSE) {
               System.out.println("TEST: codec doesn't support ord; FST stores docFreq");
             }
@@ -1708,7 +1706,7 @@ public class TestFSTs extends LuceneTestCase {
   }
 
   public void testIllegallyModifyRootArc() throws Exception {
-    assumeTrue("test relies on assertions", assertsAreEnabled);
+    assumeTrue("test relies on assertions", TEST_ASSERTS_ENABLED);
 
     Set<BytesRef> terms = new HashSet<>();
     for (int i = 0; i < 100; i++) {
@@ -1751,9 +1749,7 @@ public class TestFSTs extends LuceneTestCase {
     fst.getFirstArc(arc);
     try {
       fst.findTargetArc((int) 'm', arc, arc, reader);
-    } catch (
-        @SuppressWarnings("unused")
-        AssertionError ae) {
+    } catch (AssertionError _) {
       // expected
     }
   }
